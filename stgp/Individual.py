@@ -12,8 +12,6 @@ from .Constants import *
 class Individual:
 	head = None
 
-	fitness = None
-
 	trainingAccuracy = None
 	testAccuracy = None
 
@@ -33,8 +31,6 @@ class Individual:
 	def calculate(self, sample):
 		return self.head.calculate(sample)
 
-
-
 	def getHead(self):
 		return self.head.clone()
 
@@ -44,31 +40,12 @@ class Individual:
 	def getSize(self):
 		return self.head.getSize()
 
-
-
-	def setFitness(self, fitness):
-		self.fitness = fitness
-
-	def setTrainingRMSE(self, rmse):
-		self.trainingRMSE = rmse
-
-	def setTestRMSE(self, rmse):
-		self.testRMSE = rmse
-
-	def setTrainingAccuracy(self, accuracy):
-		self.trainingAccuracy = accuracy
-
-	def setTestAccuracy(self, accuracy):
-		self.testAccuracy = accuracy
-
-
-
 	def __str__(self):
 		return str(self.head)
 
-	def __lt__(self, other):
+	def __gt__(self, other):
 		# Using RMSE as fitness
-		return self.fitness > other.fitness
+		return self.getTrainingRMSE() < other.getTrainingRMSE()
 
 
 
@@ -80,51 +57,47 @@ class Individual:
 		return self.fitness
 
 	def getTrainingRMSE(self):
-		if self.trainingRMSE != None:
-			return self.trainingRMSE
-		acc = 0
-		ds = getTrainingSet()
-		for i in range(len(ds)):
-			dif = self.predict(ds[i]) - ds[i][-1]
-			acc += dif**2
-		acc /= len(ds)
-		acc = acc**0.5
-		self.setTrainingRMSE(acc)
-		return acc
+		if self.trainingRMSE == None:
+			acc = 0
+			ds = getTrainingSet()
+			for i in range(len(ds)):
+				dif = self.predict(ds[i]) - ds[i][-1]
+				acc += dif**2
+			acc /= len(ds)
+			acc = acc**0.5
+			self.trainingRMSE = acc 
+		return self.trainingRMSE
 
 	def getTestRMSE(self):
-		if self.testRMSE != None:
-			return self.testRMSE
-		acc = 0
-		ds = getTestSet()
-		for i in range(len(ds)):
-			dif = self.predict(ds[i]) - ds[i][-1]
-			acc += dif**2
-		acc /= len(ds)
-		acc = acc**0.5
-		self.setTestRMSE(acc)
-		return acc
+		if self.testRMSE == None:
+			acc = 0
+			ds = getTestSet()
+			for i in range(len(ds)):
+				dif = self.predict(ds[i]) - ds[i][-1]
+				acc += dif**2
+			acc /= len(ds)
+			acc = acc**0.5
+			self.testRMSE = acc
+		return self.testRMSE
 
 	def getTrainingAccuracy(self):
-		if self.trainingAccuracy != None:
-			return self.trainingAccuracy
-		hits = 0
-		ds = getTrainingSet()
-		for i in range(len(ds)):
-			if self.predict(ds[i]) == ds[i][-1]:
-				hits += 1
-		acc = hits/len(ds)
-		self.setTrainingAccuracy(acc)
-		return acc
+		if self.trainingAccuracy == None:
+			hits = 0
+			ds = getTrainingSet()
+			for i in range(len(ds)):
+				if self.predict(ds[i]) == ds[i][-1]:
+					hits += 1
+			acc = hits/len(ds)
+			self.trainingAccuracy = acc
+		return self.trainingAccuracy
 
 	def getTestAccuracy(self):
-		if self.testAccuracy != None:
-			return self.testAccuracy
-		hits = 0
-		ds = getTestSet()
-		for i in range(len(ds)):
-			if self.predict(ds[i]) == ds[i][-1]:
-				hits += 1
-		acc = hits/len(ds)
-		self.setTestAccuracy(acc)
-		return acc
+		if self.testAccuracy == None:
+			hits = 0
+			ds = getTestSet()
+			for i in range(len(ds)):
+				if self.predict(ds[i]) == ds[i][-1]:
+					hits += 1
+			acc = hits/len(ds)
+			self.testAccuracy = acc
+		return self.testAccuracy

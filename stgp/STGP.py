@@ -11,10 +11,8 @@ from .Population import Population
 
 class STGP:
 	population = None
-	output = None
-	def __init__(self, panda_ds, output="Classification"):
-		self.output = output
 
+	def __init__(self, panda_ds):
 		terminals = list(panda_ds.columns[:-1])
 		setTerminals(terminals)
 
@@ -30,7 +28,7 @@ class STGP:
 		setTrainingSet(train_ds)
 		setTestSet(test_ds)
 
-		self.population = Population(output=output)
+		self.population = Population()
 		self.population.train()
 		
 	def getCurrentGeneration(self):
@@ -47,9 +45,12 @@ class STGP:
 	
 	def getTestRMSE(self):
 		return self.population.bestIndividual.getTestRMSE()
+		
+	def getAccuracyOverTime(self):
+		return [self.population.trainingAccuracyOverTime, self.population.testAccuracyOverTime]
 
-	def getFitnessOverTime(self):
-		return [self.population.trainingOverTime, self.population.testOverTime]
+	def getRmseOverTime(self):
+		return [self.population.trainingRmseOverTime, self.population.testRmseOverTime]
 
 	def getSizeOverTime(self):
 		return self.population.sizeOverTime 

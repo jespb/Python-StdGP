@@ -15,20 +15,22 @@ from random import random, randint
 class Population:
 	population = None
 	bestIndividual = None
-	output = None
 
-	trainingOverTime = None
-	testOverTime = None
+	trainingAccuracyOverTime = None
+	testAccuracyOverTime = None
+	trainingRmseOverTime = None
+	testRmseOverTime = None
 	sizeOverTime = None
 	currentGeneration = None
 
 
-	def __init__(self, output="Classification"):
-		self.output = output
+	def __init__(self):
 		self.currentGeneration = 0
 		self.population = []
-		self.trainingOverTime = []
-		self.testOverTime = []
+		self.trainingAccuracyOverTime = []
+		self.testAccuracyOverTime = []
+		self.trainingRmseOverTime = []
+		self.testRmseOverTime = []
 		self.sizeOverTime = []
 		for i in range(POPULATION_SIZE):
 			self.population.append(Individual())
@@ -46,24 +48,21 @@ class Population:
 		while not self.stoppingCriteria():
 			self.nextGeneration()
 			self.currentGeneration += 1
-			#Mudar isto para tambem fazer o RMSE
-			self.trainingOverTime.append(self.bestIndividual.getTrainingAccuracy())
-			self.testOverTime.append(self.bestIndividual.getTestAccuracy())
+			self.trainingAccuracyOverTime.append(self.bestIndividual.getTrainingAccuracy())
+			self.testAccuracyOverTime.append(self.bestIndividual.getTestAccuracy())
+			self.trainingRmseOverTime.append(self.bestIndividual.getTrainingRMSE())
+			self.testRmseOverTime.append(self.bestIndividual.getTestRMSE())
 			self.sizeOverTime.append(self.bestIndividual.getSize())
 		while self.currentGeneration < MAX_GENERATION:
 			self.currentGeneration += 1
-			self.trainingOverTime.append(self.bestIndividual.getTrainingAccuracy())
-			self.testOverTime.append(self.bestIndividual.getTestAccuracy())
+			self.trainingAccuracyOverTime.append(self.bestIndividual.getTrainingAccuracy())
+			self.testAccuracyOverTime.append(self.bestIndividual.getTestAccuracy())
+			self.trainingRmseOverTime.append(self.bestIndividual.getTrainingRMSE())
+			self.testRmseOverTime.append(self.bestIndividual.getTestRMSE())
 			self.sizeOverTime.append(self.bestIndividual.getSize())		
 
 
 	def nextGeneration(self):
-		# Calculates Fitness (RMSE)
-		fitness = []
-		for individual in self.population:
-			fitness.append(individual.getFitness())
-			#print(individual.getFitness())
-			
 		# Sort the population from best to worse
 		self.population.sort(reverse=True) 
 
@@ -71,10 +70,11 @@ class Population:
 		if(self.bestIndividual == None or self.population[0]>self.bestIndividual):
 			self.bestIndividual = self.population[0]
 
-		if self.output == "Classification":
-			print("Gen#",self.currentGeneration, "- (TrA,TeA,TrRMSE):", self.bestIndividual.getTrainingAccuracy(),self.bestIndividual.getTestAccuracy(),self.bestIndividual.getTrainingRMSE())
-		if self.output == "Regression":
-			print("Gen#",self.currentGeneration, "- (TrRMSE,TeRMSE):", self.bestIndividual.getTrainingRMSE(), self.bestIndividual.getTestRMSE())
+		if self.currentGeneration%10 == 0:
+			if OUTPUT == "Classification":
+				print("Gen#",self.currentGeneration, "- (TrA,TeA,TrRMSE):", self.bestIndividual.getTrainingAccuracy(),self.bestIndividual.getTestAccuracy(),self.bestIndividual.getTrainingRMSE())
+			if OUTPUT == "Regression":
+				print("Gen#",self.currentGeneration, "- (TrRMSE,TeRMSE):", self.bestIndividual.getTrainingRMSE(), self.bestIndividual.getTestRMSE())
 		
 		# Generating Next Generation
 		newPopulation = []
