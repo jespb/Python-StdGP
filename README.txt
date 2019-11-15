@@ -60,3 +60,6 @@ $ python Main_STGP.py
 	[-ts tournament_size]
 		- This flag expects an integer with the tournament size;
 		- By default, this value is set to 10.
+
+Reference:
+    Poli, R., Langdon, W.B., McPhee, N.F.: A Field Guide to Genetic Programming. Lulu Enterprises, UK Ltd (2008)
