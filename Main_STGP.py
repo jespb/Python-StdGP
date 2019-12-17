@@ -17,6 +17,23 @@ import time
 
 timestamp = time.strftime("%Y%m%d_%H%M")
 
+def readDataset(filename, seed = 0):
+	panda_ds = pandas.read_csv(filename)
+	terminals = list(panda_ds.columns[:-1])
+	setTerminals(terminals)
+
+	if SHUFFLE:
+		panda_ds = panda_ds.sample(frac=1, random_state = seed)
+	train_ds_size = int(panda_ds.shape[0]*TRAIN_FRACTION)
+	train_ds = []
+	for i in range(train_ds_size):
+		train_ds.append(list(panda_ds.iloc[i]))
+	test_ds = []
+	for i in range(train_ds_size, panda_ds.shape[0]):
+		test_ds.append(list(panda_ds.iloc[i]))
+	setTrainingSet(train_ds)
+	setTestSet(test_ds)
+
 def callstgp():
 	try:
 		os.makedirs(OUTPUT_DIR)
@@ -29,8 +46,8 @@ def callstgp():
 		toWrite=[]
 		for i in range(RUNS):
 			print(i,"# run with the", dataset,"dataset")
-			p = pandas.read_csv(DATASETS_DIR+dataset)
-			stgp = STGP(p)
+			readDataset(DATASETS_DIR+dataset, seed = i)
+			stgp = STGP()
 
 			writeToFile(",")
 			for i in range(MAX_GENERATION):

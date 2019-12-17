@@ -12,22 +12,7 @@ from .Population import Population
 class STGP:
 	population = None
 
-	def __init__(self, panda_ds):
-		terminals = list(panda_ds.columns[:-1])
-		setTerminals(terminals)
-
-		if SHUFFLE:
-			panda_ds = panda_ds.sample(frac=1)
-		train_ds_size = int(panda_ds.shape[0]*TRAIN_FRACTION)
-		train_ds = []
-		for i in range(train_ds_size):
-			train_ds.append(list(panda_ds.iloc[i]))
-		test_ds = []
-		for i in range(train_ds_size, panda_ds.shape[0]):
-			test_ds.append(list(panda_ds.iloc[i]))
-		setTrainingSet(train_ds)
-		setTestSet(test_ds)
-
+	def __init__(self):
 		self.population = Population()
 		self.population.train()
 		
