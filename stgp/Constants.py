@@ -18,6 +18,7 @@ ELITISM_SIZE = 1
 SHUFFLE = True
 LIMIT_DEPTH=15
 RUNS = 30
+VERBOSE = True
 DATASETS_DIR = "datasets/"
 OUTPUT_DIR = "results/"
 DATASETS = ["heart.csv"]
@@ -50,6 +51,8 @@ if "-es" in argv:
 	ELITISM_SIZE = int(argv[argv.index("-es")+1])
 if "-dontshuffle" in argv:
 	SHUFFLE = False
+if "-s" in argv:
+	VERBOSE = False
 if "-ms" in argv:
 	MUTATION_STEP = float(argv[argv.index("-ms")+1])
 

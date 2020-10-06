@@ -12,7 +12,15 @@ from .Population import Population
 class STGP:
 	population = None
 
-	def __init__(self):
+	def __init__(self, Tr, Te):
+		setTerminals(Tr.columns[:-1])
+		
+		Tr = [ list(sample) for sample in Tr.iloc]
+		Te = [ list(sample) for sample in Te.iloc]
+
+		setTrainingSet(Tr)
+		setTestSet(Te)
+
 		self.population = Population()
 		self.population.train()
 		
