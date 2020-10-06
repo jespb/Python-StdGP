@@ -2,7 +2,6 @@ import pandas
 from sklearn.model_selection import train_test_split
 
 from stgp.STGP import STGP
-from sys import argv
 from stgp.Constants import *
 import os
 

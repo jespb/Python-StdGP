@@ -2,6 +2,7 @@ from .Individual import Individual
 from .Node import Node
 from .Constants import *
 from .GeneticOperators import getElite, getOffspring
+import multiprocessing as mp
 from random import random, randint
 import time
 
@@ -68,6 +69,12 @@ class Population:
 
 
 	def nextGeneration(self):
+		if THREADS > 1:
+			with mp.Pool(processes= THREADS) as pool:
+				fitArray = pool.map(getTrainingPredictions, self.population)
+				for i in range(len(self.population)):
+					self.population[i].trainingPredictions = fitArray[i]
+
 		# Sort the population from best to worse
 		self.population.sort(reverse=True) 
 
@@ -100,3 +107,6 @@ class Population:
 	def getGenerationTimes(self):
 		return self.generationTimes
 
+
+def getTrainingPredictions(ind):
+	return ind.getTrainingPredictions()

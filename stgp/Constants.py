@@ -24,6 +24,10 @@ OUTPUT_DIR = "results/"
 DATASETS = ["heart.csv"]
 OUTPUT = "Classification"
 out = None
+THREADS = 1
+
+
+
 
 if "-dsdir" in argv:
 	DATASETS_DIR = argv[argv.index("-dsdir")+1]
@@ -55,6 +59,8 @@ if "-s" in argv:
 	VERBOSE = False
 if "-ms" in argv:
 	MUTATION_STEP = float(argv[argv.index("-ms")+1])
+if "-t" in argv:
+	THREADS = int(argv[argv.index("-t")+1])
 
 
 
