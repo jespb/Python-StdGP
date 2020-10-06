@@ -82,22 +82,28 @@ class Individual:
 
 	def getTrainingAccuracy(self):
 		if self.trainingAccuracy == None:
-			hits = 0
-			ds = getTrainingSet()
-			for i in range(len(ds)):
-				if self.predict(ds[i]) == ds[i][-1]:
-					hits += 1
-			acc = hits/len(ds)
-			self.trainingAccuracy = acc
+			if OUTPUT != "Classification":
+				self.trainingAccuracy = 0
+			else:
+				hits = 0
+				ds = getTrainingSet()
+				for i in range(len(ds)):
+					if self.predict(ds[i]) == ds[i][-1]:
+						hits += 1
+				acc = hits/len(ds)
+				self.trainingAccuracy = acc
 		return self.trainingAccuracy
 
 	def getTestAccuracy(self):
 		if self.testAccuracy == None:
-			hits = 0
-			ds = getTestSet()
-			for i in range(len(ds)):
-				if self.predict(ds[i]) == ds[i][-1]:
-					hits += 1
-			acc = hits/len(ds)
-			self.testAccuracy = acc
+			if OUTPUT != "Classification":
+				self.testAccuracy = 0
+			else:
+				hits = 0
+				ds = getTestSet()
+				for i in range(len(ds)):
+					if self.predict(ds[i]) == ds[i][-1]:
+						hits += 1
+				acc = hits/len(ds)
+				self.testAccuracy = acc
 		return self.testAccuracy

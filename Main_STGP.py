@@ -35,8 +35,9 @@ def run(dataset, run_id = 0):
 	accuracy = stgp.getAccuracyOverTime()
 	rmse = stgp.getRmseOverTime()
 	size = stgp.getSizeOverTime()
+	times = stgp.getGenerationTimes()
 
-	return ([accuracy[0],accuracy[1],rmse[0],rmse[1],size,str(stgp.getBestIndividual())])
+	return ([accuracy[0],accuracy[1],rmse[0],rmse[1],size,times,str(stgp.getBestIndividual())])
 
 
 
@@ -51,7 +52,7 @@ def callstgp(dataset):
 		writeToFile(str(i)+",")
 	writeToFile("\n")
 		
-	attributes= ["Training-Accuracy","Test-Accuracy","Training-RMSE","Test-RMSE","Size","Dimensions","Final_Model"]
+	attributes= ["Training-Accuracy","Test-Accuracy","Training-RMSE","Test-RMSE","Size","Generation-Time","Final_Model"]
 	for ai in range(len(toWrite[0])-1):
 		for i in range(len(toWrite)):
 			writeToFile("\n"+attributes[ai]+","+str(i)+",")

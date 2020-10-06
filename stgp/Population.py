@@ -3,6 +3,7 @@ from .Node import Node
 from .Constants import *
 from .GeneticOperators import getElite, getOffspring
 from random import random, randint
+import time
 
 # 
 # By using this file, you are agreeing to this product's EULA
@@ -22,6 +23,7 @@ class Population:
 	testRmseOverTime = None
 	sizeOverTime = None
 	currentGeneration = None
+	generationTime = None
 
 
 	def __init__(self):
@@ -32,6 +34,7 @@ class Population:
 		self.trainingRmseOverTime = []
 		self.testRmseOverTime = []
 		self.sizeOverTime = []
+		self.generationTimes = []
 		for i in range(POPULATION_SIZE):
 			self.population.append(Individual())
 
@@ -45,21 +48,23 @@ class Population:
 
 
 	def train(self):
-		while not self.stoppingCriteria():
-			self.nextGeneration()
-			self.currentGeneration += 1
-			self.trainingAccuracyOverTime.append(self.bestIndividual.getTrainingAccuracy())
-			self.testAccuracyOverTime.append(self.bestIndividual.getTestAccuracy())
-			self.trainingRmseOverTime.append(self.bestIndividual.getTrainingRMSE())
-			self.testRmseOverTime.append(self.bestIndividual.getTestRMSE())
-			self.sizeOverTime.append(self.bestIndividual.getSize())
 		while self.currentGeneration < MAX_GENERATION:
+			duration = 0
+
+			if not self.stoppingCriteria():
+				t1 = time.time()
+				self.nextGeneration()
+				t2 = time.time()
+				duration = t2-t1
+			
 			self.currentGeneration += 1
 			self.trainingAccuracyOverTime.append(self.bestIndividual.getTrainingAccuracy())
 			self.testAccuracyOverTime.append(self.bestIndividual.getTestAccuracy())
 			self.trainingRmseOverTime.append(self.bestIndividual.getTrainingRMSE())
 			self.testRmseOverTime.append(self.bestIndividual.getTestRMSE())
 			self.sizeOverTime.append(self.bestIndividual.getSize())		
+			self.generationTimes.append(duration)	
+
 
 
 	def nextGeneration(self):
@@ -91,4 +96,7 @@ class Population:
 
 	def getCurrentGeneration(self):
 		return self.currentGeneration
+
+	def getGenerationTimes(self):
+		return self.generationTimes
 

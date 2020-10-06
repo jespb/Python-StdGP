@@ -25,28 +25,62 @@ class STGP:
 		self.population.train()
 		
 	def getCurrentGeneration(self):
+		'''
+		Returns the number of the current generation.
+		'''
 		return self.population.getCurrentGeneration()
 
 	def getTrainingAccuracy(self):
-		return self.population.bestIndividual.getTrainingAccuracy() if self.output == "Classification" else 0
+		'''
+		Returns the training accuracy of the best individual
+		'''
+		return self.population.bestIndividual.getTrainingAccuracy()
 
 	def getTestAccuracy(self):
-		return self.population.bestIndividual.getTestAccuracy() if self.output == "Classification" else 0
+		'''
+		Returns the test accuracy of the best individual
+		'''
+		return self.population.bestIndividual.getTestAccuracy()
 	
 	def getTrainingRMSE(self):
+		'''
+		Returns the training rmse of the best individual
+		'''
 		return self.population.bestIndividual.getTrainingRMSE()
 	
 	def getTestRMSE(self):
+		'''
+		Returns the test rmse of the best individual
+		'''
 		return self.population.bestIndividual.getTestRMSE()
 		
 	def getAccuracyOverTime(self):
+		'''
+		Returns the training and test accuracy over the generations
+		'''
 		return [self.population.trainingAccuracyOverTime, self.population.testAccuracyOverTime]
 
 	def getRmseOverTime(self):
+		'''
+		Returns the training and test rmse over the generations
+		'''
 		return [self.population.trainingRmseOverTime, self.population.testRmseOverTime]
 
 	def getSizeOverTime(self):
+		'''
+		Returns the size of the best individual over the generations
+		'''
 		return self.population.sizeOverTime 
 
+
+	def getGenerationTimes(self):
+		'''
+		Returns the time spent in each generation.
+		'''
+		return self.population.getGenerationTimes()
+
 	def getBestIndividual(self):
+		'''
+		Returns the best individual
+		'''
 		return self.population.bestIndividual
