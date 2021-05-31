@@ -5,95 +5,99 @@ from sys import argv
 #
 # This product can be obtained in https://github.com/jespb/Python-STGP
 #
-# Copyright ©2019 J. E. Batista
+# Copyright ©2019-2021 J. E. Batista
 #
 
+
+# Operators to be used by the models
+# Only these operators are available. To add mode, edit m3gp.Node.calculate(self, sample)
 OPERATORS = ["+","-","*","/"]
-MAX_DEPTH = 6 # max depth of the initial trees and the trees used for mutation
-POPULATION_SIZE = 200
+
+# Initial Maximum depth
+MAX_DEPTH = 6
+
+# Number of models in the population
+POPULATION_SIZE = 500
+
+# Maximum number of iterations
 MAX_GENERATION = 100
+
+# Fraction of the dataset to be used as training (used by Main_M3GP_standalone.py)
 TRAIN_FRACTION = 0.70
-TOURNAMENT_SIZE = 10
+
+# Number of individuals to be used in the tournament
+TOURNAMENT_SIZE = 5
+
+# Number of best individuals to be automatically moved to the next generation
 ELITISM_SIZE = 1
+
+# Shuffle the dataset (used by Main_M3GP_standalone.py)
 SHUFFLE = True
-LIMIT_DEPTH=15
+
+# Dimensions maximum depth
+LIMIT_DEPTH=17
+
+# Number of runs (used by Main_M3GP_standalone.py)
 RUNS = 30
+
+# Verbose
 VERBOSE = True
+
+# Number of CPU Threads to be used
+THREADS = 1
+
+
+
+
 DATASETS_DIR = "datasets/"
 OUTPUT_DIR = "results/"
+
 DATASETS = ["heart.csv"]
 OUTPUT = "Classification"
-out = None
-THREADS = 1
 
 
 
 
 if "-dsdir" in argv:
 	DATASETS_DIR = argv[argv.index("-dsdir")+1]
+
 if "-odir" in argv:
 	OUTPUT_DIR = argv[argv.index("-odir")+1]
+
 if "-d" in argv:
 	DATASETS = argv[argv.index("-d")+1].split(";")
-if "-r" in argv:
-	OUTPUT = "Regression"
+
 if "-runs" in argv:
 	RUNS = int(argv[argv.index("-runs")+1])
+
 if "-op" in argv:
 	OPERATORS = argv[argv.index("-op")+1].split(";")
+
 if "-md" in argv:
 	MAX_DEPTH = int(argv[argv.index("-md")+1])
+
 if "-ps" in argv:
 	POPULATION_SIZE = int(argv[argv.index("-ps")+1])
+
 if "-mg" in argv:
 	MAX_GENERATION = int(argv[argv.index("-mg")+1])
+
 if "-tf" in argv:
-	TRAIN_FRACTION = float(argv[argv.index("-train")+1])
+	TRAIN_FRACTION = float(argv[argv.index("-tf")+1])
+
 if "-ts" in argv:
 	TOURNAMENT_SIZE = int(argv[argv.index("-ts")+1])
+
 if "-es" in argv:
 	ELITISM_SIZE = int(argv[argv.index("-es")+1])
+
 if "-dontshuffle" in argv:
 	SHUFFLE = False
+
 if "-s" in argv:
 	VERBOSE = False
-if "-ms" in argv:
-	MUTATION_STEP = float(argv[argv.index("-ms")+1])
+
 if "-t" in argv:
 	THREADS = int(argv[argv.index("-t")+1])
 
 
-
-
-def openFile(name):
-	global out
-	out = open(name,"w")
-
-def writeToFile(msg):
-	global out
-	out.write(msg)
-
-def closeFile():
-	global out
-	out.close()
-
-terminals = None
-def setTerminals(l):
-	global terminals 
-	terminals = l
-def getTerminals():
-	return terminals
-
-trainingSet = None
-def setTrainingSet(ds):
-	global trainingSet
-	trainingSet = ds
-def getTrainingSet():
-	return trainingSet
-
-testSet = None
-def setTestSet(ds):
-	global testSet
-	testSet = ds
-def getTestSet():
-	return testSet

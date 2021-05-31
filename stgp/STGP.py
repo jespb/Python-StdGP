@@ -1,4 +1,3 @@
-from .Constants import *
 from .Population import Population
 
 # 
@@ -6,81 +5,123 @@ from .Population import Population
 #
 # This product can be obtained in https://github.com/jespb/Python-STGP
 #
-# Copyright ©2019 J. E. Batista
+# Copyright ©2019-2021 J. E. Batista
 #
+
+class ClassifierNotTrainedError(Exception):
+    """ You tried to use the classifier before training it. """
+
+    def __init__(self, expression, message = ""):
+        self.expression = expression
+        self.message = message
+
 
 class STGP:
 	population = None
 
-	def __init__(self, Tr, Te):
-		setTerminals(Tr.columns[:-1])
+	operators = None
+	max_depth = None
+	population_size = None
+	max_generation = None
+	tournament_size = None
+	elitism_size = None
+	limit_depth =None
+	threads = None
+	verbose = None
+
+	def checkIfTrained(self):
+		if self.population == None:
+			raise ClassifierNotTrainedError("The classifier must be trained using the fit(Tr_X, Tr_Y) method before being used.")
+
+
+	def __init__(self, operators=["+","-","*","/"], max_depth = 6, population_size = 500, 
+		max_generation = 100, tournament_size = 5, elitism_size = 1, limit_depth = 17, 
+		threads=1, verbose = True):
+
+		if sum( [0 if op in ["+","-","*","/"] else 0 for op in operators ] ) > 0:
+			print( "[Warning] Some of the following operators may not be supported:", operators)
+		self.operators = operators
+		self.max_depth = max_depth
+		self.population_size = population_size
+		self.max_generation = max_generation
+		self.tournament_size = tournament_size
+		self.elitism_size = elitism_size
+		self.limit_depth = limit_depth
+		self.threads = max(1, threads)
+		self.verbose = verbose
+		pass
+
+	def __str__(self):
+		self.checkIfTrained()
 		
-		Tr = [ list(sample) for sample in Tr.iloc]
-		Te = [ list(sample) for sample in Te.iloc]
+		return str(self.getBestIndividual())
+		
 
-		setTrainingSet(Tr)
-		setTestSet(Te)
+	def fit(self,Tr_X, Tr_Y, Te_X = None, Te_Y = None):
+		if self.verbose:
+			print("Training a model with the following parameters: ", end="")
+			print("{Operators : "+str(self.operators)+"}, ", end="")
+			print("{Max Initial Depth : "+str(self.max_depth)+"}, ", end="")
+			print("{Population Size : "+str(self.population_size)+"}, ", end="")
+			print("{Max Generation : "+str(self.max_generation)+"}, ", end="")
+			print("{Tournament Size : "+str(self.tournament_size)+"}, ", end="")
+			print("{Elitism Size : "+str(self.elitism_size)+"}, ", end="")
+			print("{Depth Limit : "+str(self.limit_depth)+"}, ", end="")
+			print("{Threads : "+str(self.threads)+"}, ", end="")
 
-		self.population = Population()
+		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, self.operators, self.max_depth,
+			self.population_size, self.max_generation, self.tournament_size, self.elitism_size, 
+			self.limit_depth, self.threads, self.verbose)
 		self.population.train()
-		
-	def getCurrentGeneration(self):
-		'''
-		Returns the number of the current generation.
-		'''
-		return self.population.getCurrentGeneration()
 
-	def getTrainingAccuracy(self):
-		'''
-		Returns the training accuracy of the best individual
-		'''
-		return self.population.bestIndividual.getTrainingAccuracy()
+		self.getBestIndividual().prun()
 
-	def getTestAccuracy(self):
+
+	def predict(self, dataset):
 		'''
-		Returns the test accuracy of the best individual
+		Returns the predictions for the samples in a dataset.
 		'''
-		return self.population.bestIndividual.getTestAccuracy()
-	
-	def getTrainingRMSE(self):
+		self.checkIfTrained()
+
+		return self.population.getBestIndividual().predict(dataset)
+
+	def getBestIndividual(self):
 		'''
-		Returns the training rmse of the best individual
+		Returns the final M3GP model.
 		'''
-		return self.population.bestIndividual.getTrainingRMSE()
-	
-	def getTestRMSE(self):
-		'''
-		Returns the test rmse of the best individual
-		'''
-		return self.population.bestIndividual.getTestRMSE()
-		
+		self.checkIfTrained()
+
+		return self.population.getBestIndividual()
+
 	def getAccuracyOverTime(self):
 		'''
-		Returns the training and test accuracy over the generations
+		Returns the training and test accuracy of the best model in each generation.
 		'''
-		return [self.population.trainingAccuracyOverTime, self.population.testAccuracyOverTime]
+		self.checkIfTrained()
 
-	def getRmseOverTime(self):
+		return [self.population.getTrainingAccuracyOverTime(), self.population.getTestAccuracyOverTime()]
+
+	def getRMSEOverTime(self):
 		'''
-		Returns the training and test rmse over the generations
+		Returns the training and test accuracy of the best model in each generation.
 		'''
-		return [self.population.trainingRmseOverTime, self.population.testRmseOverTime]
+		self.checkIfTrained()
+
+		return [self.population.getTrainingRMSEOverTime(), self.population.getTestRMSEOverTime()]
+
 
 	def getSizeOverTime(self):
 		'''
-		Returns the size of the best individual over the generations
+		Returns the size and number of dimensions of the best model in each generation.
 		'''
-		return self.population.sizeOverTime 
+		self.checkIfTrained()
 
+		return self.population.getSizeOverTime()
 
 	def getGenerationTimes(self):
 		'''
 		Returns the time spent in each generation.
 		'''
-		return self.population.getGenerationTimes()
+		self.checkIfTrained()
 
-	def getBestIndividual(self):
-		'''
-		Returns the best individual
-		'''
-		return self.population.bestIndividual
+		return self.population.getGenerationTimes()

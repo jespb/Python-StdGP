@@ -1,12 +1,12 @@
-from .Constants import *
 from random import randint, random
+import numpy as np
 
 # 
 # By using this file, you are agreeing to this product's EULA
 #
 # This product can be obtained in https://github.com/jespb/Python-STGP
 #
-# Copyright ©2019 J. E. Batista
+# Copyright ©2019-2021 J. E. Batista
 #
 
 class Node:
@@ -14,60 +14,59 @@ class Node:
 	right = None
 	value = None
 
-	def __init__(self,depth=MAX_DEPTH, left=None,value=None,right=None, fromString = None, fsi=0):
-		if fromString == None:
-			if value == None:
-				i = randint(0,len(getTerminals())+len(OPERATORS)) # randint(a,b) = [a,b]
-				if i < len(OPERATORS) and depth > 1:
-					self.value = i
-					self.left = Node(depth-1)
-					self.right = Node(depth-1)
-				else:
-					self.value = randint(0,len(getTerminals()))-1
-					if self.value == -1:
-						self.value *= random()
-			else:
-				self.left = left
-				self.right=right
-				self.value=value
+
+	def __init__(self):
+		pass
+
+
+	def create(self, operators=None, terminals=None, depth=None,full=False):
+		if depth>1 and (random()<0.5 or full ==True ):
+			self.value = operators[randint(0,len(operators)-1)]
+			self.left = Node()
+			self.left.create(operators, terminals, depth-1)
+			self.right = Node()
+			self.right.create(operators, terminals, depth-1)
 		else:
-			if fsi == 0:
-				fsi = [0]
-			if fromString[fsi[0]] == "(":
-				fsi[0] += 1 # salta o (
-				self.left = Node(fromString=fromString, fsi = fsi)
-				self.value = "+-*/".find(fromString[fsi[0]])
-				fsi[0] += 1 # salta a operacao
-				self.right = Node(fromString=fromString, fsi = fsi)
-				fsi[0] += 1 # salta o )
-			else:
-				val = fromString[fsi[0]]
-				if val[0] == "X":
-					self.value = int(val[1:])
-				else:
-					self.value = -float(val)
-				fsi[0] += 1 # salta o terminal
+			self.value = terminals[randint(0,len(terminals)-1)] # Sem literais
+
+
+	def copy(self, left=None,value=None,right=None):
+		self.left = left
+		self.right=right
+		self.value=value
 
 
 	def __str__(self):
 		if self.left == None:
-			return str(-self.value if self.value < 0 else getTerminals()[self.value])
+			return str(self.value)
 		else:
-			return "( " + str(self.left) + " " + OPERATORS[self.value] + " " + str(self.right) + " )"
+			return "( " + str(self.left) + " " + str(self.value) + " " + str(self.right) + " )"
+
 
 	def getSize(self):
+		'''
+		Returns the total number of nodes within this Node.
+		'''
 		if self.left == None:
 			return 1
 		else:
 			return self.left.getSize() + 1 + self.right.getSize()
 
+
 	def getDepth(self):
+		'''
+		Returns the depth of this Node.
+		'''
 		if self.left == None:
 			return 1
 		else:
 			return 1 + max(self.left.getDepth(),self.right.getDepth())
 
+
 	def getRandomNode(self, value=None):
+		'''
+		Returns a random Node within this Node.
+		'''
 		if value == None:
 			value = randint(0,self.getSize()-1)
 		if value == 0:
@@ -80,8 +79,10 @@ class Node:
 			return self.right.getRandomNode(value-left_size-1)
 
 
-
 	def swap(self, other):
+		'''
+		Swaps the content of two nodes.
+		'''
 		l = self.left
 		v = self.value
 		r = self.right
@@ -92,23 +93,147 @@ class Node:
 		other.value = v
 		other.right = r
 
+
 	def clone(self):
+		'''
+		Returns a clone of this node.
+		'''
 		if self.left == None:
-			return Node(left = None, value=self.value, right = None)
+			n = Node()
+			n.copy(left = None, value=self.value, right = None)
+			return n
 		else:
-			return Node(left = self.left.clone(), value=self.value, right=self.right.clone())
+			n = Node()
+			n.copy(left = self.left.clone(), value=self.value, right=self.right.clone())
+			return n
+
 
 
 	def calculate(self, sample):
+		'''
+		Returns the calculated value of a sample.
+		'''
 		if self.left == None:
-			return -self.value if self.value < 0 else sample[self.value]
+			try:
+				return np.array( sample[self.value] )#.astype("float64")
+			except:
+				try:
+					return np.array( [float(self.value)]*sample.shape[0] )
+				except:
+					print(self.value, sample)
+					return np.array( [float(self.value)]*sample.shape[0] )
+
+				
 		else:
-			if self.value == 0: #+
+			if self.value == "+": #+
 				return self.left.calculate(sample) + self.right.calculate(sample)
-			if self.value == 1: #-
+			if self.value == "-": #-
 				return self.left.calculate(sample) - self.right.calculate(sample)
-			if self.value == 2: #*
+			if self.value == "*": #*
 				return self.left.calculate(sample) * self.right.calculate(sample)
-			if self.value == 3: #/
+			if self.value == "/": #/
 				right = self.right.calculate(sample)
-				return self.left.calculate(sample) if right == 0 else self.left.calculate(sample) / self.right.calculate(sample)
+				right = np.where(right==0, 1, right)
+				return self.left.calculate(sample) / right
+
+
+	def isLeaf(self):
+		'''
+		Returns True if the Node had no sub-nodes.
+		'''
+		return self.left == None
+
+	def getSemantics(self,tr_x):
+		'''
+		Returns the semantic of a Node.
+		'''		
+		return self.calculate(tr_x)
+
+	def redirect(self, other):
+		'''
+		Assigns the content of another Node to this Node.
+		'''
+		self.value = other.value
+		self.left = other.left
+		self.right = other.right
+
+	def prun(self, tr_x):
+		'''
+		Simplifies this Node
+		'''
+		semantics = self.getSemantics(tr_x)
+		semantics.sort()
+		if semantics[0]== semantics[-1] and len(semantics)>1:
+			self.value = str(semantics[0])
+			self.left = None
+			self.right = None
+		# [+, -, *, /]
+		
+		# +
+		if self.value == "+":
+			# 0 + X == X
+			if not self.isLeaf() and ( self.left.isLeaf() and self.left.value == "0.0" ):
+				self.redirect(self.right)
+
+			# X + 0 == X
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value == "0.0" ):
+				self.redirect(self.left)
+
+			# X + X == 2 * X
+			if not self.isLeaf() and ( str(self.right) == str(self.left) ):
+				self.value = "*"
+				n = Node()
+				n.copy(value = "2.0")
+				self.left.redirect( n )
+
+		# - 
+		if self.value == "-":
+			# X - 0 == X
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value == "0.0" ):
+				self.redirect(self.left)
+
+			# X - X == 0
+			if not self.isLeaf() and ( str(self.right) == str(self.left) ):
+				n = Node()
+				n.copy(value = "0.0")
+				self.redirect( n )
+
+		# * 
+		if self.value == "*":
+			# X * 0 == 0,  0 * X == 0
+			if not self.isLeaf() and ( (self.left.isLeaf() and self.left.value=="0.0") or (self.right.isLeaf() and self.right.value=="0.0") ):
+				n = Node()
+				n.copy(value = "0.0")
+				self.redirect( n )
+
+			# 1 * X == X
+			if not self.isLeaf() and ( self.left.isLeaf() and self.left.value == "1.0" ):
+				self.redirect(self.right)
+
+			# X * 1 == X
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value == "1.0" ):
+				self.redirect(self.left)
+
+		# //
+		if self.value == "/":
+			# X // 0 == 1
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value=="0.0" ):
+				n = Node()
+				n.copy(value = "1.0")
+				self.redirect( n )
+
+			# X // 1 == X
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value=="1.0" ):
+				self.redirect(self.left)
+
+			# X // X == 1
+			if not self.isLeaf() and ( str(self.right) == str(self.left) ):
+				n = Node()
+				n.copy(value = "1.0")
+				self.redirect( n )
+
+		if self.left != None:
+			self.left.prun(tr_x)
+
+		if self.right != None:
+			self.right.prun(tr_x)	
