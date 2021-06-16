@@ -37,7 +37,7 @@ model = STGP()
 model.fit(Tr_X, Tr_Y)
 
 # Predict test results
-pred = m3gp.predict(Te_X)
+pred = model.predict(Te_X)
 
 # Obtain test accuracy
 print( accuracy_score(pred, Te_Y) )
