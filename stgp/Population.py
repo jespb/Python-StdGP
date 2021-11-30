@@ -129,9 +129,9 @@ class Population:
 				model = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y) for ind in self.population] )
 				for i in range(len(self.population)):
 					self.population[i].model = model[i][0].model
+					self.population[i].fitness = model[i][1]
 					self.population[i].labelToInt = model[i][0].labelToInt
 					self.population[i].intToLabel = model[i][0].intToLabel
-					self.population[i].trainingPredictions = model[i][1]
 					self.population[i].training_X = self.Tr_x
 					self.population[i].training_Y = self.Tr_y
 		else:
@@ -201,7 +201,7 @@ def fitIndividuals(a):
 	ind,x,y = a
 	ind.fit(x,y)
 	
-	return ( ind, ind.predict(x) )
+	return ( ind, ind.getFitness() )
 
 def getTrainingPredictions(ind):
 	return ind.getTrainingPredictions()

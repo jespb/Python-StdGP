@@ -92,6 +92,13 @@ class Individual:
 
 			self.model.fit(hyper_X,Tr_y)
 
+			# Binary classification with an extra slot for missing values
+			if len(list(set(Tr_y))) <= 3: 
+				# If the accuracy is < 0.5, invert the labels
+				if self.getAccuracy(Tr_x, Tr_y, pred="Tr") < 0.5:
+					self.trainingClassPredictions = None
+					self.model.invertPredictions()
+
 
 	def getSize(self):
 		'''
@@ -139,7 +146,7 @@ class Individual:
 			if self.fitnessType == "RMSE":
 				self.getTrainingValuePredictions()
 				waf = mean_squared_error(self.trainingValuePredictions, self.convertLabelsToInt(self.training_Y))**0.5
-				self.fitness = waf 
+				self.fitness = -waf 
 
 		return self.fitness
 
@@ -194,7 +201,7 @@ class Individual:
 		elif pred == "Te":
 			pred = self.getTestValuePredictions(X)
 		else:
-			pred = self.predict(X)
+			pred = self.predict(X, classOutput = False)
 
 		return mean_squared_error(pred, Y)**0.5
 
