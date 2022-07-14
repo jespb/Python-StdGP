@@ -119,7 +119,7 @@ class Individual:
 		Returns a deep clone of the individual's list of dimensions.
 		'''
 		ret = Individual()
-		ret.copy(head.clone())
+		ret.copy(self.head.clone())
 		return ret
 
 	def convertLabelsToInt(self, Y):
