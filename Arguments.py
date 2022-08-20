@@ -10,17 +10,26 @@ from sys import argv
 
 
 # Operators to be used by the models
-# Only these operators are available. To add mode, edit m3gp.Node.calculate(self, sample)
-OPERATORS = ["+","-","*","/"]
+# Only these operators are available.
+OPERATORS = [("+",2),("-",2),("*",2),("/",2),("log",1), ("sqrt", 1)]
+
+# Metrics used to evaluate the model
+METRICS = ["Kappa", "F2", "AUC"]
 
 # Initial Maximum depth
 MAX_DEPTH = 6
 
-# Number of models in the population
-POPULATION_SIZE = 500
+# Number of models in the GP population
+POPULATION_SIZE_GP = 100
+
+# Number of models in the GA population
+POPULATION_SIZE_GA = 100
 
 # Maximum number of iterations
-MAX_GENERATION = 100
+MAX_GENERATION_GP = 30
+
+# Maximum number of iterations
+MAX_GENERATION_GA = 50
 
 # Fraction of the dataset to be used as training (used by Main_M3GP_standalone.py)
 TRAIN_FRACTION = 0.70
@@ -38,21 +47,24 @@ SHUFFLE = True
 LIMIT_DEPTH=17
 
 # Number of runs (used by Main_M3GP_standalone.py)
-RUNS = 30
+RUNS = 5
 
 # Verbose
-VERBOSE = True
+VERBOSE = False
 
 # Number of CPU Threads to be used
-THREADS = 1
+THREADS = 10
 
 
+DATASETS_DIR = "AGP/"
+OUTPUT_DIR = "new_agp_unary/"
 
+DATASETS = ["radiomics_GLAND.csv"]
 
-DATASETS_DIR = "datasets/"
-OUTPUT_DIR = "results/"
+#DATASETS_DIR = "datasets_AGP/"
+#OUTPUT_DIR = "AGP/"
 
-DATASETS = ["heart.csv"]
+#DATASETS = ["gland_resampledRad_CORRECTfeatures_nearZeroVar.csv"]
 OUTPUT = "Classification"
 
 
