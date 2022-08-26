@@ -14,7 +14,7 @@ from sys import argv
 OPERATORS = [("+",2),("-",2),("*",2),("/",2),("log",1), ("sqrt", 1)]
 
 # Metrics used to evaluate the model
-METRICS = ["Kappa", "F2", "AUC"]
+METRICS = ["Acc", "Kappa", "F2", "AUC"]
 
 # Initial Maximum depth
 MAX_DEPTH = 6
