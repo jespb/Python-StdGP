@@ -56,15 +56,11 @@ VERBOSE = False
 THREADS = 10
 
 
-DATASETS_DIR = "AGP/"
-OUTPUT_DIR = "new_agp_unary/"
+DATASETS_DIR = "satasets/"
+OUTPUT_DIR = "results/"
 
-DATASETS = ["radiomics_GLAND.csv"]
+DATASETS = ["heart.csv"]
 
-#DATASETS_DIR = "datasets_AGP/"
-#OUTPUT_DIR = "AGP/"
-
-#DATASETS = ["gland_resampledRad_CORRECTfeatures_nearZeroVar.csv"]
 OUTPUT = "Classification"
 
 
