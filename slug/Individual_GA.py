@@ -1,6 +1,5 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from Arguments import *
 
 
 
@@ -19,6 +18,7 @@ class Individual_GA:
 	training_Y = None
 
 	probabilities = None 
+	GP_params = None
 
 	fitness = None
 
@@ -26,15 +26,17 @@ class Individual_GA:
 	model = None
 
 	fitnessType = ["Accuracy", "RMSE", "F2"][2]
-	metrics = ["Kappa", "F2", "AUC"]
+	metrics = ["Acc", "Kappa", "F2", "AUC"]
 
-	def __init__(self, probabilities):
+	def __init__(self, probabilities, GP_params, metrics):
 		self.probabilities = probabilities
+		self.GP_params = GP_params
+		self.metrics = metrics
 
 	def create(self):
 		if self.model_name == "GP":
-			self.model = STGP(operators=OPERATORS,max_depth=MAX_DEPTH, population_size=POPULATION_SIZE_GP, max_generation=MAX_GENERATION_GP,
-			tournament_size=TOURNAMENT_SIZE, elitism_size=ELITISM_SIZE, limit_depth=LIMIT_DEPTH, threads=THREADS, verbose=VERBOSE)
+			self.model = STGP(operators=self.GP_params["operators"],max_depth=self.GP_params["max_depth"], population_size=self.GP_params["population_size_GP"], max_generation=self.GP_params["max_generation_GP"],
+			tournament_size=self.GP_params["tournament_size"], limit_depth=self.GP_params["limit_depth"], elitism_size=self.GP_params["elitism_size"],  threads=1, verbose=False)
 		elif self.model_name == "DT":
 			self.model = DecisionTreeClassifier()
 		elif self.model_name == "RF":
@@ -85,7 +87,9 @@ class Individual_GA:
 		# Obtain training results
 		saved_metrics = []
 		for metric in self.metrics:
-			if metric == "F2":
+			if metric == "Acc":
+				saved_metrics.append(self.model.getAccuracyOverTime())
+			elif metric == "F2":
 				saved_metrics.append(self.model.getF2OverTime())
 			elif metric == "Kappa":
 				saved_metrics.append(self.model.getKappaOverTime())
@@ -94,11 +98,6 @@ class Individual_GA:
 		size      = self.model.getSizeOverTime()
 		model_str = str(self.model.getBestIndividual())
 		times     = self.model.getGenerationTimes()
-		
-		#tr_f2     = metric1[0]
-		#te_f2     = metric1[1]
-		#tr_kappa    = metric2[0]
-		#te_kappa    = metric2[1]
 
 		return (saved_metrics,
 			size, times,

@@ -25,7 +25,7 @@ class Population_GA:
 	generationTimes = None
 
 
-	def __init__(self, Tr_x, Tr_y, Te_x, Te_y, population_size, max_generation, elitism_size, metrics = ["Kappa", "F2", "AUC"]):
+	def __init__(self, Tr_x, Tr_y, Te_x, Te_y, population_size, max_generation, elitism_size, metrics, GP_params, threads):
 
 		self.Tr_x = Tr_x
 		self.Tr_y = Tr_y
@@ -36,16 +36,17 @@ class Population_GA:
 		self.population_size = population_size
 		self.max_generation = max_generation
 		self.elitism_size = elitism_size
+		self.GP_params = GP_params
 
 		self.population = []
-		self.threads = 16
+		self.threads = threads
 		self.metrics = metrics
 		self.verbose = True
 
 		while len(self.population) < self.population_size:
 			probs = [random.randint(0,1) for col in self.terminals]
 			probs = fixAllZeros(probs, len(self.terminals))
-			ind = Individual_GA(probs)
+			ind = Individual_GA(probs, self.GP_params, self.metrics)
 			ind.create()
 			self.population.append(ind)
 
@@ -54,6 +55,9 @@ class Population_GA:
 
 
 		if not self.Te_x is None:
+			if "Acc" in self.metrics:
+				self.trainingAccuracyOverTime = []
+				self.testAccuracyOverTime = []
 			if "F2" in self.metrics:
 				self.trainingF2OverTime = []
 				self.testF2OverTime = []
@@ -95,6 +99,9 @@ class Population_GA:
 			self.currentGeneration += 1
 			
 			if not self.Te_x is None:
+				if "Acc" in self.metrics:
+					self.trainingAccuracyOverTime.append(self.bestIndividual.model.getBestIndividual().getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"))
+					self.testAccuracyOverTime.append(self.bestIndividual.model.getBestIndividual().getAccuracy(self.Te_x, self.Te_y, pred="Te"))
 				if "F2" in self.metrics:
 					self.trainingF2OverTime.append(self.bestIndividual.model.getBestIndividual().getF2(self.Tr_x, self.Tr_y, pred="Tr"))
 					self.testF2OverTime.append(self.bestIndividual.model.getBestIndividual().getF2(self.Te_x, self.Te_y, pred="Te"))
@@ -159,11 +166,12 @@ class Population_GA:
 		# Debug
 		if self.verbose and self.currentGeneration%5==0:
 			if not self.Te_x is None:
-				print("> Gen #"+str(self.currentGeneration)+":  Tr-F2: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getF2(self.Tr_x, self.Tr_y)+" // Te-F2: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getF2(self.Te_x, self.Te_y) +
-				":  Tr-Kappa: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getKappa(self.Tr_x, self.Tr_y)+" // Te-Kappa: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getKappa(self.Te_x, self.Te_y)
-				+ ":  Tr-ROC_AUC: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getAUC(self.Tr_x, self.Tr_y)+" // Te-ROC_AUC: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getAUC(self.Te_x, self.Te_y) + " // Time: " + str(end- begin) , '\n')
+				print("> Gen #"+str(self.currentGeneration)+":   Tr-Acc: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getAccuracy(self.Tr_x, self.Tr_y)+" // Te-Acc: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getAccuracy(self.Te_x, self.Te_y) +
+				":  Tr-F2: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getF2(self.Tr_x, self.Tr_y)+" // Te-F2: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getF2(self.Te_x, self.Te_y) +
+				":  Tr-Kappa: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getKappa(self.Tr_x, self.Tr_y)+" // Te-Kappa: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getKappa(self.Te_x, self.Te_y) +
+				":  Tr-ROC_AUC: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getAUC(self.Tr_x, self.Tr_y)+" // Te-ROC_AUC: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getAUC(self.Te_x, self.Te_y) + " // Time: " + str(end- begin) , '\n')
 			else:
-				print("   > Gen #"+str(self.currentGeneration)+":  Tr-F2: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getF2(self.Tr_x, self.Tr_y))
+				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.model.getBestIndividual().getAccuracy(self.Tr_x, self.Tr_y))
 
 
 	def predict(self, sample):

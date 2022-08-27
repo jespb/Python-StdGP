@@ -20,16 +20,16 @@ METRICS = ["Acc", "Kappa", "F2", "AUC"]
 MAX_DEPTH = 6
 
 # Number of models in the GP population
-POPULATION_SIZE_GP = 100
+POPULATION_SIZE_GP = 100 
 
 # Number of models in the GA population
-POPULATION_SIZE_GA = 100
+POPULATION_SIZE_GA = 100 
 
 # Maximum number of iterations
-MAX_GENERATION_GP = 30
+MAX_GENERATION_GP = 30 
 
 # Maximum number of iterations
-MAX_GENERATION_GA = 50
+MAX_GENERATION_GA = 50 
 
 # Fraction of the dataset to be used as training (used by Main_M3GP_standalone.py)
 TRAIN_FRACTION = 0.70
@@ -47,7 +47,7 @@ SHUFFLE = True
 LIMIT_DEPTH=17
 
 # Number of runs (used by Main_M3GP_standalone.py)
-RUNS = 5
+RUNS = 2
 
 # Verbose
 VERBOSE = False
@@ -56,7 +56,7 @@ VERBOSE = False
 THREADS = 10
 
 
-DATASETS_DIR = "satasets/"
+DATASETS_DIR = "datasets/"
 OUTPUT_DIR = "results/"
 
 DATASETS = ["heart.csv"]

@@ -39,7 +39,7 @@ class Population:
 
 
 	def __init__(self, Tr_x, Tr_y, Te_x, Te_y, operators, max_initial_depth, population_size,
-		max_generation, tournament_size, elitism_size, limit_depth, threads, verbose, metrics = ["Kappa", "F2", "AUC"]):
+		max_generation, tournament_size, elitism_size, limit_depth, threads, verbose, metrics = ["Acc", "Kappa", "F2", "AUC"]):
 
 		self.Tr_x = Tr_x
 		self.Tr_y = Tr_y
@@ -54,7 +54,7 @@ class Population:
 		self.tournament_size = tournament_size
 		self.elitism_size = elitism_size
 		self.limit_depth = limit_depth
-		self.threads = 1
+		self.threads = threads
 		self.verbose = verbose
 
 		self.metrics = metrics
@@ -71,6 +71,9 @@ class Population:
 
 
 		if not self.Te_x is None:
+			if "Acc" in self.metrics:
+				self.trainingAccuracyOverTime = []
+				self.testAccuracyOverTime = []
 			if "F2" in self.metrics:
 				self.trainingF2OverTime = []
 				self.testF2OverTime = []
@@ -112,6 +115,9 @@ class Population:
 			self.currentGeneration += 1
 			
 			if not self.Te_x is None:
+				if "Acc" in self.metrics:
+					self.trainingAccuracyOverTime.append(self.bestIndividual.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"))
+					self.testAccuracyOverTime.append(self.bestIndividual.getAccuracy(self.Te_x, self.Te_y, pred="Te"))
 				if "F2" in self.metrics:
 					self.trainingF2OverTime.append(self.bestIndividual.getF2(self.Tr_x, self.Tr_y, pred="Tr"))
 					self.testF2OverTime.append(self.bestIndividual.getF2(self.Te_x, self.Te_y, pred="Te"))

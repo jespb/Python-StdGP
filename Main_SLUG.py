@@ -1,5 +1,4 @@
 import pandas
-from sacrebleu import metrics
 
 from slug.GA import GA
 from sys import argv
@@ -63,11 +62,16 @@ def run(r,dataset):
 	Tr_X, Te_X, Tr_Y, Te_Y = openAndSplitDatasets(dataset,r)
 
 	# Train a model
-	model = GA(population_size=POPULATION_SIZE_GA, max_generation=MAX_GENERATION_GA, elitism_size=ELITISM_SIZE, metrics=METRICS)
+	model = GA(population_size=POPULATION_SIZE_GA, max_generation=MAX_GENERATION_GA, elitism_size=ELITISM_SIZE, metrics=METRICS,
+				GP_params={"population_size_GP":POPULATION_SIZE_GP, "max_generation_GP":MAX_GENERATION_GP, "tournament_size":TOURNAMENT_SIZE, "operators":OPERATORS, "max_depth":MAX_DEPTH, "limit_depth":LIMIT_DEPTH, "elitism_size":ELITISM_SIZE},
+				threads=THREADS, verbose=VERBOSE,
+				)
+
 	model.fit(Tr_X, Tr_Y, Te_X, Te_Y)
 
 
 	# Obtain training results
+	acc  = model.getAccuracyOverTime()
 	f2  = model.getF2OverTime()
 	kappa      = model.getKappaOverTime()
 	#size      = model.getSizeOverTime()
@@ -76,6 +80,8 @@ def run(r,dataset):
 	#features = model.getBestIndividual().probabilities
 	features = model.getFeaturesOverTime()
 	
+	tr_acc     = acc[0]
+	te_acc     = acc[1]
 	tr_f2     = f2[0]
 	te_f2     = f2[1]
 	tr_kappa    = kappa[0]
@@ -87,15 +93,18 @@ def run(r,dataset):
 		print("  > Dataset:", dataset)
 		print("  > Final model:", model_str)
 		print("  > Training F2:", tr_f2[-1])
+		print("  > Test Acc:", te_acc[-1])
 		print("  > Test F2:", te_f2[-1])
 		print("  > Training Kappa:", tr_kappa[-1])
 		print("  > Test Kappa:", te_kappa[-1])
 		print()
 
-	return (tr_f2,te_f2,
+	return (tr_acc,te_acc,
+			tr_f2,te_f2,
 			tr_kappa,te_kappa,
-			 times, features,
-			model_str)
+			times, features,
+			model_str,
+			)
 			
 
 def gastgp():
@@ -120,10 +129,12 @@ def gastgp():
 				file.write(str(i)+",")
 			file.write("\n")
 		
-			attributes= ["Training-F2","Test-F2",
-						 "Training-Kappa", "Test-Kappa",
-						  "Time",	
-						 "Features", "Final_Model"]
+			attributes= ["Training-Acc","Test-Acc",
+						"Training-F2","Test-F2",
+						"Training-Kappa", "Test-Kappa",
+						"Time",	
+						"Features", "Final_Model"
+						]
 
 			# Write attributes with value over time
 			for ai in range(len(attributes)-1):
@@ -148,13 +159,15 @@ def gastgp():
 			# Write some parameters
 			file.write("\n\nParameters")
 			file.write("\nOperators,"+str(OPERATORS))
-			file.write("\nMax Initial Depth,"+str(6))
-			file.write("\nPopulation Size,"+str(500))
-			file.write("\nMax Generation,"+str(100))
+			file.write("\nMax Initial Depth,"+str(MAX_DEPTH))
+			file.write("\nPopulation Size GA,"+str(POPULATION_SIZE_GA))
+			file.write("\nPopulation Size GP,"+str(POPULATION_SIZE_GP))
+			file.write("\nMax Generation GA,"+str(MAX_GENERATION_GA))
+			file.write("\nMax Generation GP,"+str(MAX_GENERATION_GP))
 			file.write("\nTournament Size,"+str(TOURNAMENT_SIZE))
 			file.write("\nElitism Size,"+str(ELITISM_SIZE))
-			file.write("\nDepth Limit,"+str(8))
-			file.write("\nThreads,"+str(26))
+			file.write("\nDepth Limit,"+str(LIMIT_DEPTH))
+			file.write("\nThreads,"+str(THREADS))
 
 
 			file.close()
