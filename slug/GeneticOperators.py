@@ -6,18 +6,18 @@ import numpy as np
 # 
 # By using this file, you are agreeing to this product's EULA
 #
-# This product can be obtained in https://github.com/jespb/Python-STGP
+# This product can be obtained in https://github.com/NMVRodrigues/SLUG
 #
-# Copyright ©2019-2021 J. E. Batista
+# Copyright ©2021-2022 N. M. Rodrigues
 #
 
 def roulette(population):
   
     # Computes the totallity of the features fitness
-    max = sum([indiv.getFitness('Accuracy') for indiv in population])
+    max = sum([indiv.getFitness() for indiv in population])
     
     # Computes for each feature the probability 
-    indiv_probabilities = [indiv.getFitness('Accuracy')/max for indiv in population]
+    indiv_probabilities = [indiv.getFitness()/max for indiv in population]
 	
     return population[np.random.choice(len(population), p=indiv_probabilities)]
 

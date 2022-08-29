@@ -5,6 +5,14 @@ import time
 import random
 import numpy as np
 
+# 
+# By using this file, you are agreeing to this product's EULA
+#
+# This product can be obtained in https://github.com/NMVRodrigues/SLUG
+#
+# Copyright ©2021-2022 N. M. Rodrigues
+#
+
 class Population_GA:
 	population_size = None
 	max_generation = None
@@ -40,7 +48,7 @@ class Population_GA:
 		self.classifier = classifier
 
 		self.population = []
-		self.threads = 1
+		self.threads = threads
 		self.metrics = metrics
 		self.verbose = True
 
@@ -150,7 +158,8 @@ class Population_GA:
 				model = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y, self.Te_x, self.Te_y) for ind in self.population] )
 				for i in range(len(self.population)):
 					#print('model: ', model)
-					self.population[i].model = model[i]
+					self.population[i].model = model[i][0]
+					self.population[i].fitness = model[i][1]
 					#self.population[i].labelToInt = model[i].labelToInt
 					#self.population[i].intToLabel = model[i].intToLabel
 					#self.population[i].trainingPredictions = model[i][1]
@@ -158,15 +167,16 @@ class Population_GA:
 					#self.population[i].training_X = self.Tr_x
 					#self.population[i].training_Y = self.Tr_y
 		else:
-		
 			[ ind.fit(self.Tr_x, self.Tr_y, self.Te_x, self.Te_y) for ind in self.population]
-			[ ind.getFitness(ind.fitnessType) for ind in self.population ]
+			[ ind.getFitness() for ind in self.population ]
+
+		fit = []
+		for ind in self.population:
+			fit.append(ind.fitness)
+		#print(min(fit), max(fit)) # *** J: as DT parece estagnar bem depressa na accuracy maxima da geracao mas a minima vai subido hmmm
+
 
 		# Sort the population from best to worse
-		#print('population: ')
-		#for elem in self.population:
-		#		print(elem.fitness)
-
 		self.population.sort(reverse=True)
 
 
@@ -254,8 +264,9 @@ class Population_GA:
 def fitIndividuals(a):
 	ind,x,y,tx, ty = a
 	ind.fit(x,y, tx, ty)
+	ind.getFitness(x,y)
 	
-	return ind.model
+	return (ind.model, ind.fitness)
 
 def fixAllZeros(l, n):
 	while np.all((np.array(l) == 0)):

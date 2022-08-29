@@ -44,7 +44,7 @@ class Individual:
 	model_name = ["SimpleThresholdClassifier"][0]
 	model = None
 
-	fitnessType = ["Accuracy", "RMSE", "F2"][2]
+	fitnessType = ["Accuracy", "RMSE", "F2"][0]
 
 	def __init__(self, operators, terminals, max_depth):
 		self.operators = operators
@@ -148,8 +148,6 @@ class Individual:
 			
 			if self.fitnessType == "F2":
 				self.getTrainingClassPredictions()
-				#print(self.trainingClassPredictions, '\n')
-				#print(self.convertLabelsToInt(self.training_Y))
 				f2 = fbeta_score(self.trainingClassPredictions, self.convertLabelsToInt(self.training_Y), beta=2)
 				self.fitness = f2
 
