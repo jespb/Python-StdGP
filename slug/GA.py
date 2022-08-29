@@ -12,13 +12,14 @@ class GA:
 
 	def __init__(self, population_size = 100, max_generation = 50, elitism_size = 1, metrics = ["Acc", "Kappa", "F2", "AUC"],
 				GP_params={"population_size_gp":100, "max_generation_GP":30, "operators":[("+",2),("-",2),("*",2),("/",2)], "max_depth":6, "limit_depth":17, "elitism_size":1},
-				threads=1, verbose = False):
+				classifier='GP', threads=1, verbose = False):
  
 		self.population_size = population_size
 		self.max_generation = max_generation
 		self.elitism_size = elitism_size
 		self.metrics = metrics
 		self.GP_params = GP_params
+		self.classifier = classifier
 		self.verbose = verbose
 		self.threads = threads
 
@@ -36,7 +37,7 @@ class GA:
 			print("{Elitism Size : "+str(self.elitism_size)+"}, ", end="")
 	
 
-		self.population = Population_GA(Tr_X, Tr_Y, Te_X, Te_Y, self.population_size, self.max_generation, self.elitism_size, self.metrics, self.GP_params, self.threads)
+		self.population = Population_GA(Tr_X, Tr_Y, Te_X, Te_Y, self.population_size, self.max_generation, self.elitism_size, self.metrics, self.GP_params, self.classifier ,self.threads)
 		self.population.train()
 
 		self.getBestIndividual()

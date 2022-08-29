@@ -64,7 +64,7 @@ def run(r,dataset):
 	# Train a model
 	model = GA(population_size=POPULATION_SIZE_GA, max_generation=MAX_GENERATION_GA, elitism_size=ELITISM_SIZE, metrics=METRICS,
 				GP_params={"population_size_GP":POPULATION_SIZE_GP, "max_generation_GP":MAX_GENERATION_GP, "tournament_size":TOURNAMENT_SIZE, "operators":OPERATORS, "max_depth":MAX_DEPTH, "limit_depth":LIMIT_DEPTH, "elitism_size":ELITISM_SIZE},
-				threads=THREADS, verbose=VERBOSE,
+				classifier=CLASSIFIER, threads=THREADS, verbose=VERBOSE,
 				)
 
 	model.fit(Tr_X, Tr_Y, Te_X, Te_Y)
@@ -75,7 +75,10 @@ def run(r,dataset):
 	f2  = model.getF2OverTime()
 	kappa      = model.getKappaOverTime()
 	#size      = model.getSizeOverTime()
-	model_str = str(model.getBestIndividual().model.getBestIndividual())
+	if CLASSIFIER == 'GP':
+		model_str = str(model.getBestIndividual().model.getBestIndividual())
+	else:
+		model_str = CLASSIFIER
 	times     = model.getGenerationTimes()
 	#features = model.getBestIndividual().probabilities
 	features = model.getFeaturesOverTime()

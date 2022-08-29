@@ -194,7 +194,7 @@ class Individual:
 		else:
 			pred = self.predict(X)
 
-		return fbeta_score(pred, Y, beta=2)
+		return accuracy_score(pred, Y)
 
 	def getF2(self, X,Y,pred=None):
 		'''
@@ -233,12 +233,9 @@ class Individual:
 			pred = self.getTestClassPredictions(X)
 		else:
 			pred = self.predict(X)
-		#try:
+	
 		return roc_auc_score(Y,pred)
-		#except:
-	#		print('y_true')
-	#		print(Y)
-#			afaf
+	
 
 
 	def getRMSE(self, X, Y,pred=None):

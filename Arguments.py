@@ -9,6 +9,10 @@ from sys import argv
 #
 
 
+# Classifier to be used
+# Classifiers available [Gp, DT, RF]
+CLASSIFIER = "DT"
+
 # Operators to be used by the models
 # Only these operators are available.
 OPERATORS = [("+",2),("-",2),("*",2),("/",2),("log",1), ("sqrt", 1)]
@@ -31,7 +35,7 @@ MAX_GENERATION_GP = 30
 # Maximum number of iterations
 MAX_GENERATION_GA = 50 
 
-# Fraction of the dataset to be used as training (used by Main_M3GP_standalone.py)
+# Fraction of the dataset to be used as training 
 TRAIN_FRACTION = 0.70
 
 # Number of individuals to be used in the tournament
@@ -40,14 +44,14 @@ TOURNAMENT_SIZE = 5
 # Number of best individuals to be automatically moved to the next generation
 ELITISM_SIZE = 1
 
-# Shuffle the dataset (used by Main_M3GP_standalone.py)
+# Shuffle the dataset 
 SHUFFLE = True
 
 # Dimensions maximum depth
 LIMIT_DEPTH=17
 
-# Number of runs (used by Main_M3GP_standalone.py)
-RUNS = 2
+# Number of runs 
+RUNS = 5
 
 # Verbose
 VERBOSE = False
