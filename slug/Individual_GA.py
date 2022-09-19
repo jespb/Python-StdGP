@@ -13,6 +13,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import fbeta_score, cohen_kappa_score, roc_auc_score
 from .STGP import STGP
 from copy import deepcopy
+from .MultiDT import MultiDT
+from .GSGP import GSGP_Indiv
 import sys
 
 # 
@@ -36,7 +38,8 @@ class Individual_GA:
 	model = None
 
 	fitnessType = ["Accuracy", "RMSE", "F2", "2FOLD-ACC"][0]
-	metrics = ["Acc", "Kappa", "F2", "AUC"]
+	metrics = ["Acc"]
+	#metrics = ["Acc", "Kappa", "F2", "AUC"]
 
 	def __init__(self, probabilities, GP_params, metrics, classifier):
 		self.probabilities = probabilities
@@ -54,6 +57,10 @@ class Individual_GA:
 			self.model = RandomForestClassifier(random_state=42) 
 		elif self.classifier == "SVM":
 			self.model =  SVC(random_state=42) 
+		elif self.classifier == "MDT":
+			self.model = MultiDT()
+		elif self.classifier == "GSGP":
+			self.model = GSGP_Indiv()
 
 	# for 2fold-acc
 	def create_tmp_model(self):
@@ -156,8 +163,11 @@ class Individual_GA:
 
 
 	def clone(self):
+		tmp = Individual_GA(self.probabilities, self.GP_params, self.metrics, self.classifier)
+		tmp.create()
+		return tmp
 		
-		return deepcopy(self)
+	#return deepcopy(self)
 
 
 
