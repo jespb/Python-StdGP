@@ -1,17 +1,17 @@
-This is a, easy-to-use, scikit-learn inspired version of the STGP algorithm.
+This is a, easy-to-use, scikit-learn inspired version of the Standard Genetic Programming (StdGP) algorithm.
 
 
 By using this file, you are agreeing to this product's EULA
-This product can be obtained in https://github.com/jespb/Python-STGP
-Copyright ©2019-2021 J. E. Batista
+This product can be obtained in https://github.com/jespb/Python-StdGP
+Copyright ©2019-2022 J. E. Batista
 
 
 This file contains information about the command and flags used in the stand-alone version of this implementation and an explanation on how to import, use and edit this implementation.
 
 
-This implementation of STGP can be used in a stand-alone fashion using the following command and flags:
+This implementation of StdGP can be used in a stand-alone fashion using the following command and flags:
 
-$ python Main_STGP_standalone.py
+$ python Main_StdGP_standalone.py
 	
 	[-d datasets] 
 		- This flag expects a set of csv dataset names separated by ";" (e.g., a.csv;b.csv)
@@ -77,11 +77,11 @@ How to import this implementation to your project:
 	- import the STGP class using "from stgp.STGP import STGP".
 
 How to use this implementation:
-	$ from stgp.STGP import STGP
-	$ model = STGP()
+	$ from stdgp.StdGP import StdGP
+	$ model = StdGP()
 	$ model.fit( training_x, training_y)
 
-Arguments for STGP():
+Arguments for StdGP():
 	operators			-> Operators used by the individual (default: ["+","-","*","/"] )
 	max_depth			-> Max initial depths of the individuals (default: 6)
 	population_size		-> Population size (default: 500)
@@ -99,7 +99,7 @@ Arguments for model.fit():
 
 
 Useful methods:
-	$ model = STGP()			-> starts the model;
+	$ model = StdGP()			-> starts the model;
 	$ model.fit(X, Y)			-> fits the model to the dataset;
 	$ model.predict(dataset)    -> Returns a list with the prediction of the given dataset.
 
@@ -107,17 +107,17 @@ Useful methods:
 
 
 How to edit this implementation:
-	Fitness Function ( stgp.Individual ):
+	Fitness Function ( stdgp.Individual ):
 		- Change the getFitness() method to use your own fitness function;
 		- This implementation assumes that a higher fitness is always better. To change this, edit the __gt__ method in this class;
 		- You may use the getTrainingPredictions() and getTrainingSet() to obtain the models prediction and the training set;
 		- You can also explore the behind the standard fitness function;
-		- Warning: STGP evaluates every model in every run, as such, I do not recomend complex fitness functions. You should invest in fast evaluation methods to train a population.
+		- Warning: StdGP evaluates every model in every run, as such, I do not recomend complex fitness functions. You should invest in fast evaluation methods to train a population.
 
-	Classification method ( stgp.Individual ):
+	Classification method ( stdgp.Individual ):
 		- Change the trainModel() method to use your own classifier;
 		- Assuming it is a scykit-learn implementation, you may only need to change the first few lines of this method;
-		- Warning: STGP evaluates every model in every run, as such, I do not recomend complex classification model. You should invest in fast classification methods to train a population and the use a more complex method (if you wish) on the final model.
+		- Warning: StdGP evaluates every model in every run, as such, I do not recomend complex classification model. You should invest in fast classification methods to train a population and the use a more complex method (if you wish) on the final model.
 
 
 Reference:

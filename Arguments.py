@@ -3,15 +3,17 @@ from sys import argv
 # 
 # By using this file, you are agreeing to this product's EULA
 #
-# This product can be obtained in https://github.com/jespb/Python-STGP
+# This product can be obtained in https://github.com/jespb/Python-StdGP
 #
-# Copyright ©2019-2021 J. E. Batista
+# Copyright ©2019-2022 J. E. Batista
 #
 
 
 # Operators to be used by the models
 # Only these operators are available. To add mode, edit m3gp.Node.calculate(self, sample)
-OPERATORS = ["+","-","*","/"]
+
+#OPERATORS = [("+",2),("-",2),("*",2),("/",2),("log2",1), ("max", 3)] # Example
+OPERATORS = [("+",2),("-",2),("*",2),("/",2)] # Default
 
 # Initial Maximum depth
 MAX_DEPTH = 6
@@ -46,6 +48,14 @@ VERBOSE = True
 # Number of CPU Threads to be used
 THREADS = 1
 
+# Random state
+RANDOM_STATE = 42
+
+# Models wrapped by the StdGP models
+MODEL_NAME = ["SimpleThresholdClassifier"][0]
+
+# Fitness used by the M3GP models
+FITNESS_TYPE = ["Accuracy", "MSE", "WAF", "2FOLD"][0]
 
 
 
@@ -72,6 +82,9 @@ if "-runs" in argv:
 
 if "-op" in argv:
 	OPERATORS = argv[argv.index("-op")+1].split(";")
+	for i in range(len(OPERATORS)):
+		OPERATORS[i] = OPERATORS[i].split(",")
+		OPERATORS[i][1] = int(OPERATORS[i][1])
 
 if "-md" in argv:
 	MAX_DEPTH = int(argv[argv.index("-md")+1])
@@ -99,5 +112,8 @@ if "-s" in argv:
 
 if "-t" in argv:
 	THREADS = int(argv[argv.index("-t")+1])
+
+if "-rs" in argv:
+	RANDOM_STATE = int(argv[argv.index("-rs")+1])
 
 
