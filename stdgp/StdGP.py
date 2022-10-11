@@ -294,6 +294,7 @@ class StdGP:
 				for i in range(len(self.population)):
 					self.population[i].trainingPredictions = results[i][0]
 					self.population[i].fitness = results[i][1]
+					self.population[i].model = results[i][2]
 					self.population[i].training_X = self.Tr_x
 					self.population[i].training_Y = self.Tr_y
 		else:
@@ -330,6 +331,19 @@ class StdGP:
 
 
 
+	def predict(self, dataset):
+		'''
+		Returns the predictions for the samples in a dataset.
+		'''
+		self.checkIfTrained()
+
+		return self.population.getBestIndividual().predict(dataset)
+
+		return "Population Not Trained" if self.bestIndividual == None else self.bestIndividual.predict(sample)
+
+
+
+
 
 def fitIndividuals(a):
 	ind,x,y = a
@@ -340,24 +354,13 @@ def fitIndividuals(a):
 		ret.append(None)
 	else:
 		ret.append(ind.getTrainingPredictions())
+	
 	ret.append(ind.getFitness())
+	ret.append(ind.model)
 
 	
 	return ret 
 
-
-
-
-
-	def predict(self, dataset):
-		'''
-		Returns the predictions for the samples in a dataset.
-		'''
-		self.checkIfTrained()
-
-		return self.population.getBestIndividual().predict(dataset)
-
-		return "Population Not Trained" if self.bestIndividual == None else self.bestIndividual.predict(sample)
 
 
 
