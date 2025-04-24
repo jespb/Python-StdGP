@@ -3,7 +3,7 @@ This is a, easy-to-use, scikit-learn inspired version of the Standard Genetic Pr
 
 By using this file, you are agreeing to this product's EULA
 This product can be obtained in https://github.com/jespb/Python-StdGP
-Copyright ©2019-2022 J. E. Batista
+Copyright ©2019-2025 J. E. Batista
 
 
 This file contains information about the command and flags used in the stand-alone version of this implementation and an explanation on how to import, use and edit this implementation.
@@ -118,6 +118,55 @@ How to edit this implementation:
 		- Change the trainModel() method to use your own classifier;
 		- Assuming it is a scykit-learn implementation, you may only need to change the first few lines of this method;
 		- Warning: StdGP evaluates every model in every run, as such, I do not recomend complex classification model. You should invest in fast classification methods to train a population and the use a more complex method (if you wish) on the final model.
+
+
+
+If you use this implementation, please cite one of the following works where it is used:
+
+@article{BATISTA2025101761,
+	title = {Complexity, interpretability and robustness of GP-based feature engineering in remote sensing},
+	journal = {Swarm and Evolutionary Computation},
+	volume = {92},
+	pages = {101761},
+	year = {2025},
+	issn = {2210-6502},
+	doi = {https://doi.org/10.1016/j.swevo.2024.101761},
+	url = {https://www.sciencedirect.com/science/article/pii/S2210650224002992},
+	author = {João E. Batista and Adam K. Pindur and Ana I.R. Cabral and Hitoshi Iba and Sara Silva},
+}
+
+@article{Rodrigues2023,
+  title = {Exploring SLUG: Feature Selection Using Genetic Algorithms and Genetic Programming},
+  volume = {5},
+  ISSN = {2661-8907},
+  url = {http://dx.doi.org/10.1007/s42979-023-02106-3},
+  DOI = {10.1007/s42979-023-02106-3},
+  number = {1},
+  journal = {SN Computer Science},
+  publisher = {Springer Science and Business Media LLC},
+  author = {Rodrigues,  Nuno M. and Batista,  João E. and Cava,  William La and Vanneschi,  Leonardo and Silva,  Sara},
+  year = {2023},
+  month = dec 
+}
+
+@inproceedings{10.1145/3520304.3533946,
+	author = {Batista, Jo\~{a}o E. and Silva, Sara},
+	title = {Evolving a cloud-robust water index with genetic programming},
+	year = {2022},
+	isbn = {9781450392686},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	url = {https://doi.org/10.1145/3520304.3533946},
+	doi = {10.1145/3520304.3533946},
+	booktitle = {Proceedings of the Genetic and Evolutionary Computation Conference Companion},
+	pages = {55–56},
+	numpages = {2},
+	location = {Boston, Massachusetts},
+	series = {GECCO '22}
+}
+
+
+
 
 
 Reference:
