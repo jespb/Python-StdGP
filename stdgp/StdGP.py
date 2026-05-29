@@ -63,6 +63,9 @@ class StdGP:
 	sizeOverTime = None
 	generationTimes = None
 
+	# Pool for multiprocessing - created once
+	pool = None
+
 
 
 	def checkIfTrained(self):
@@ -95,6 +98,12 @@ class StdGP:
 		self.fitnessType = fitnessType
 
 		self.verbose = verbose
+
+		# Create multiprocessing pool once if threads > 1
+		if self.threads > 1:
+			self.pool = mp.Pool(processes=self.threads)
+		else:
+			self.pool = None
 
 
 
@@ -298,8 +307,9 @@ class StdGP:
 					self.population[i].training_X = self.Tr_x
 					self.population[i].training_Y = self.Tr_y
 		else:
-			[ ind.fit(self.Tr_x, self.Tr_y) for ind in self.population]
-			[ ind.getFitness() for ind in self.population ]
+			for ind in self.population:
+				ind.fit(self.Tr_x, self.Tr_y)
+				ind.getFitness()
 
 		# Sort the population from best to worse
 		self.population.sort(reverse=True)
@@ -330,6 +340,13 @@ class StdGP:
 				print("   > Gen #%2d:  Fitness: %.6f // Tr-Score: %.6f // Time: %.4f" % (self.currentGeneration, self.bestIndividual.getFitness(),  self.bestIndividual.getTrainingMeasure(), end- begin )  )
 
 
+	def __del__(self):
+		# Clean up multiprocessing pool if created
+		if hasattr(self, 'pool') and self.pool is not None:
+			self.pool.close()
+			self.pool.join()
+
+
 
 	def predict(self, dataset):
 		'''
@@ -345,10 +362,13 @@ class StdGP:
 
 
 
-def fitIndividuals(a):
-	ind,x,y = a
-	ind.getFitness(x,y)
-
+def fitIndividualsWithData(ind, tr_x, tr_y):
+	'''
+	Fit individual with pre-specified training data to reduce pickle overhead.
+	'''
+	# Pre-compute fitness to avoid redundant calculations
+	ind.getFitness(tr_x, tr_y)
+	
 	ret = []
 	if "FOLD" in ind.fitnessType:
 		ret.append(None)
@@ -357,7 +377,23 @@ def fitIndividuals(a):
 	
 	ret.append(ind.getFitness())
 	ret.append(ind.model)
+	
+	return ret 
 
+
+def fitIndividuals(a):
+	ind,x,y = a
+	# Pre-compute fitness to avoid redundant calculations
+	ind.getFitness(x,y)
+	
+	ret = []
+	if "FOLD" in ind.fitnessType:
+		ret.append(None)
+	else:
+		ret.append(ind.getTrainingPredictions())
+	
+	ret.append(ind.getFitness())
+	ret.append(ind.model)
 	
 	return ret 
 
